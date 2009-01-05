@@ -17,12 +17,13 @@ class TweetHandler (
   Schemifier.schemify(false, Log.infoF _, Tweet)
   println("Table schemified")
   
-  var numRootTweets = Tweet.findAll(NullRef(Tweet.parentId), By_>(Tweet.numRetweets, 2)).length   
-  var lastParentId = Tweet.findAll(NullRef(Tweet.parentId)).sort(_.tweetId.is < _.tweetId.is).last.tweetId.is 
+  var numRootTweets = Tweet.count(NullRef(Tweet.parentId), By_>(Tweet.numRetweets, 2))
+  var lastParentId = Tweet.find(NullRef(Tweet.parentId), OrderBy(Tweet.tweetId, Descending), MaxRows(1)).open_!.tweetId.is
   var index: Int = -1
   var queueSize = 30
   var curNumThreads = 0
   var gettingNewTweets: Boolean = false
+  var newTweets: List[Tweet] = Nil
   
   def addTweetsToQueue = {
     for (i <- (globeActor.mailboxSize + curNumThreads) to queueSize) {
@@ -48,23 +49,24 @@ class TweetHandler (
 	  val i: Int = h.index
       h.curNumThreads += 1
    
-      var newTweets: List[Tweet] = Nil
-      if (!h.gettingNewTweets) {
+      if (!h.gettingNewTweets && (h.newTweets.length == 0)) {
         h.gettingNewTweets = true
-        newTweets = Tweet.findAll(NullRef(Tweet.parentId), By_>(Tweet.tweetId, h.lastParentId)).sort(_.tweetId.is < _.tweetId.is)
+        newTweets = Tweet.findAll(NullRef(Tweet.parentId), By_>(Tweet.tweetId, h.lastParentId), OrderBy(Tweet.tweetId, Ascending))
+	    h.lastParentId = newTweets.last.tweetId  
         h.gettingNewTweets = false
       }
       
-      if (newTweets.length > 0) {
+      if (h.newTweets.length > 0) {
 	    h.index -= 1
-	    h.lastParentId = newTweets.first.tweetId  
         var newTweet = newTweets.first
+        newTweets = newTweets.drop(1)
+        
 	    newTweet.recursivelyPopulateChildList
 	    println("  sendTweet (new) " + h.lastParentId + "  from " + newTweet.author)
 	    h.globeActor ! Pair("incoming new tweet", newTweet)
 	    
       } else if (i < h.numRootTweets) {
-	    var oldTweet = Tweet.findAll(StartAt(i), MaxRows(1), NullRef(Tweet.parentId), By_>(Tweet.numRetweets, 2)).first
+	    var oldTweet = Tweet.find(StartAt(i), MaxRows(1), NullRef(Tweet.parentId), By_>(Tweet.numRetweets, 2)).open_!
 	    oldTweet.recursivelyPopulateChildList
 	    if (treeIsAcceptable(oldTweet)) {
 	      println("  sendTweet (old) " + i + "  from " + oldTweet.author)
