@@ -51,15 +51,15 @@ class TweetHandler (
    
       if (!h.gettingNewTweets && (h.newTweets.length == 0)) {
         h.gettingNewTweets = true
-        newTweets = Tweet.findAll(NullRef(Tweet.parentId), By_>(Tweet.tweetId, h.lastParentId), OrderBy(Tweet.tweetId, Ascending))
-	    h.lastParentId = newTweets.last.tweetId  
+        h.newTweets = h.newTweets ++ Tweet.findAll(NullRef(Tweet.parentId), By_>(Tweet.tweetId, h.lastParentId), OrderBy(Tweet.tweetId, Ascending))
+	    h.lastParentId = h.newTweets.last.tweetId  
         h.gettingNewTweets = false
       }
       
       if (h.newTweets.length > 0) {
 	    h.index -= 1
-        var newTweet = newTweets.first
-        newTweets = newTweets.drop(1)
+        var newTweet = h.newTweets.first
+        h.newTweets = h.newTweets.drop(1)
         
 	    newTweet.recursivelyPopulateChildList
 	    println("  sendTweet (new) " + h.lastParentId + "  from " + newTweet.author)
