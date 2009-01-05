@@ -52,7 +52,7 @@ class TweetHandler (
       if (!h.gettingNewTweets && (h.newTweets.length == 0)) {
         h.gettingNewTweets = true
         h.newTweets = h.newTweets ++ Tweet.findAll(NullRef(Tweet.parentId), By_>(Tweet.tweetId, h.lastParentId), OrderBy(Tweet.tweetId, Ascending))
-	    h.lastParentId = h.newTweets.last.tweetId  
+	    if (h.newTweets.length > 0) h.lastParentId = h.newTweets.last.tweetId  
         h.gettingNewTweets = false
       }
       
