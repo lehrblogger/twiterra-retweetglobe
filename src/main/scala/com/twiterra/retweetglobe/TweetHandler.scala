@@ -17,10 +17,16 @@ class TweetHandler (
   Schemifier.schemify(false, Log.infoF _, Tweet)
   println("Table schemified")
   
-  var numRootTweets = Tweet.count(NullRef(Tweet.parentId), By_>(Tweet.numRetweets, 2))
+  
+  val queueSize = 30
+  val minNumRetweets = 3
+  var minDepth = 1
+  var minAvgDist = 0
+  var minDist = 0
+  
+  var numRootTweets = Tweet.count(NullRef(Tweet.parentId), By_>(Tweet.numRetweets, minNumRetweets))
   var lastParentId = Tweet.find(NullRef(Tweet.parentId), OrderBy(Tweet.tweetId, Descending), MaxRows(1)).open_!.tweetId.is
   var index: Int = -1
-  var queueSize = 30
   var curNumThreads = 0
   var gettingNewTweets: Boolean = false
   var newTweets: List[Tweet] = Nil
@@ -66,7 +72,7 @@ class TweetHandler (
 	    h.globeActor ! Pair("incoming new tweet", newTweet)
 	    
       } else if (i < h.numRootTweets) {
-	    var oldTweet = Tweet.find(StartAt(i), MaxRows(1), NullRef(Tweet.parentId), By_>(Tweet.numRetweets, 2)).open_!
+	    var oldTweet = Tweet.find(StartAt(i), MaxRows(1), NullRef(Tweet.parentId), By_>(Tweet.numRetweets, h.minNumRetweets)).open_!
 	    oldTweet.recursivelyPopulateChildList
 	    if (treeIsAcceptable(oldTweet)) {
 	      println("  sendTweet (old) " + i + "  from " + oldTweet.author)
@@ -85,12 +91,9 @@ class TweetHandler (
     } 
     
     def treeIsAcceptable(t: Tweet): Boolean = {
-      var minDepth = 2
-      var minAvgDist = 2000
-      var minDist = 300
       println("    " + t.author + "  t.depth=" + t.depth.toInt + " minAvgDist=" + t.avgDist.toInt + " minDist=" + t.minDist.toInt)
 
-      ((t.numRetweets > minDepth) && (t.depth >= minDepth) && (t.avgDist >= minAvgDist) && (t.minDist >= minDist))
+      ((t.numRetweets > h.minDepth) && (t.depth >= h.minDepth) && (t.avgDist >= h.minAvgDist) && (t.minDist >= h.minDist))
     }
   }
   

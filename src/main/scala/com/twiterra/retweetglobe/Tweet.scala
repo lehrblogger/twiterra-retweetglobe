@@ -24,12 +24,12 @@ class Tweet extends KeyedMapper[Long, Tweet] {
   
   var children: List[Tweet] = Nil
 
-  def getChildren = Tweet.findAll(By(Tweet.parentId, tweetId))
+  def getChildren = Tweet.findAll(By(Tweet.parentId, tweetId), MaxRows(numRetweets))
   def descendants: List[Tweet] = children ++ children.flatMap(_.descendants)
   var depth: Int = 0//was -1, trying it with zero
 
   def recursivelyPopulateChildList: Unit = {	 //returns depth of tree from this tweet
-    children = getChildren
+    if (numRetweets > 0) children = getChildren
     
     var childDepths: List[Int] = Nil
     children.foreach(child => {
