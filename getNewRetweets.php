@@ -1,3 +1,13 @@
+/*
+ * TwiTerra
+ *   Revealing how people use Twitter to share and re-share ideas, building connections that encircle the world.
+ *   http://twiterra.com
+ *   http://github.com/lehrblogger/twiterra-retweetglobe/
+ * project by Steven Lehrburger
+ *   lehrburger (at) gmail (dot) com
+ * NYU Interactive Telecommunications Program, Fall 2008
+ * Introduction to Computational Media with Dan Shiffman
+ */
 <?php
   include('/home/memento85/private/dbAccess.php');// database login info kept in a private file
   $retweetsPerSearch = 50;                        // the maximum number of search results per page 
