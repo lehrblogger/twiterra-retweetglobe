@@ -3,44 +3,43 @@ package com.twiterra.retweetglobe
 import gov.nasa.worldwind.render.GlobeAnnotation
 import gov.nasa.worldwind.geom.Position
 import java.awt.{Color, Font}
-/*
-class TweetAnnotation (tweetText: String, var position: Position, val color: Color, val followThis: Boolean) 
-    extends GlobeAnnotation({
-      if ((new Font("Arial Unicode MS", Font.PLAIN, 12)).canDisplayUpTo(tweetText) == -1) {
-        println(tweetText + "   " + (new Font("Arial Unicode MS", Font.PLAIN, 12)).canDisplayUpTo(tweetText))
-        tweetText 
-      } else {
-        "font error"
-      }}, position, new Font("Arial Unicode MS", Font.PLAIN, 12))
-{*/
-class TweetAnnotation (tweetText: String, var position: Position, val color: Color, val followThis: Boolean, val isNewTweet: Boolean) 
-    extends GlobeAnnotation(tweetText, position, Font.decode("SansSerif"))//, new Font("Arial Unicode MS", Font.PLAIN, 12))
-{
-  customConfiguratins
-  if (followThis) {
-    //setAlwaysOnTop(true)
+
+// An extension of the build in GlobeAnnotation to support specific appearances
+class TweetAnnotation (
+  tweetText: String,
+  var position: Position,
+  val color: Color,
+  val followThis: Boolean,
+  val isNewTweet: Boolean
+) //extends GlobeAnnotation(tweetText, position, Font.decode("SansSerif"))				
+  //extends GlobeAnnotation(tweetText, position, Font.decode("Arial-BOLD-12"))
+  extends GlobeAnnotation(tweetText, position, new Font("SansSerif", Font.PLAIN, 12)) {
+                                                   // All of those should work, they are just
+                                                      // different things I tried to get the non-
+                                                      // MacRoman characters to display properly
+    
+  var annoAttr = getAttributes                     // modifies the current attributes, get them first
+  if (isNewTweet) {                                // invert the colors for new tweets
+    annoAttr.setBorderColor(Color.BLACK)           // modifying the attributes object
+    annoAttr.setTextColor(Color.BLACK)
+    annoAttr.setBackgroundColor(new Color(color.getRed, color.getGreen, color.getBlue, 200))
   } else {
-    updateAnnotationOpacity(getAttributes.getTextColor.getAlpha / 3)
+    annoAttr.setBorderColor(color)
+    annoAttr.setTextColor(color)
+    annoAttr.setBackgroundColor(new Color(Color.BLACK.getRed, Color.BLACK.getGreen, Color.BLACK.getBlue, 200))
+  }
+  setAttributes(annoAttr)                          // set the newly modifed attributes object 
+  
+  if (!followThis) {                               // if this annotation is not being followed
+    updateAnnotationOpacity(getAttributes.getTextColor.getAlpha / 3) //, decrease its alpha
   }
     
-  def customConfiguratins = {
-    var annoAttr = getAttributes
-    if (isNewTweet) {
-      annoAttr.setBorderColor(Color.BLACK)
-      annoAttr.setTextColor(Color.BLACK)
-      annoAttr.setBackgroundColor(new Color(color.getRed, color.getGreen, color.getBlue, 200))
-    } else {
-      annoAttr.setBorderColor(color)
-      annoAttr.setTextColor(color)
-      annoAttr.setBackgroundColor(new Color(Color.BLACK.getRed, Color.BLACK.getGreen, Color.BLACK.getBlue, 200))
-    }
-    setAttributes(annoAttr)
-  }
-  
+  // As additional trees are added to the screen, previous annotations progressively fade
+    // The alpha parameter is the amount by which this annotations's alpha should change
   def updateAnnotationOpacity(alpha: Int) = {
-    def calcAlpha(a: Int): Int = 0 max (a - alpha)
+    def calcAlpha(a: Int): Int = 0 max (a - alpha) // utility function to max difference with zero
   
-    val attributes = getAttributes
+    val attributes = getAttributes				   // modifies the current attributes, get them first	
       
     val bc = attributes.getBorderColor
     attributes.setBorderColor(new Color(bc.getRed, bc.getGreen, bc.getBlue, calcAlpha(bc.getAlpha)))
@@ -51,6 +50,6 @@ class TweetAnnotation (tweetText: String, var position: Position, val color: Col
     val tc = attributes.getTextColor
     attributes.setTextColor(new Color(tc.getRed, tc.getGreen, tc.getBlue, calcAlpha(tc.getAlpha)))
 
-    setAttributes(attributes)
+    setAttributes(attributes)                      // set the newly modifed attributes object 
   }  
 }

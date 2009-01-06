@@ -7,40 +7,22 @@ All Rights Reserved.
 package com.twiterra.retweetglobe;
 
 import gov.nasa.worldwind.*;
-/*import gov.nasa.worldwind.util.StatusBar;
-import gov.nasa.worldwind.event.*;
-import gov.nasa.worldwind.examples.ClickAndGoSelectListener;
-import gov.nasa.worldwind.examples.LayerPanel;
-import gov.nasa.worldwind.examples.StatisticsPanel;
-import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.layers.*;
-import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
-*/
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Provides a base application framework for simple WorldWind examples. Although this class will run stand-alone, it is
- * not meant to be used that way. But it has a main method to show how a derived class would call it.
- *
- * @version $Id: ApplicationTemplate.java 5176 2008-04-25 21:31:06Z patrickmurris $
- */
+// Based on ApplicationTemplate.java with some functionality removed for simplification.
+  // This is the main class - the primary change I made here was to make it full screen
 public class TwiTerraApp
 {
-    
     protected static class AppFrame extends JFrame
     {
-    	/**
-		 * I just wanted the warning to go away - Steven
-		 */
-		private static final long serialVersionUID = 1L;
-		
 		private Dimension canvasSize;
         private TwiTerraAppPanel wwjPanel;
 
         public AppFrame()
         {	
+        	// make full screen
         	this.setUndecorated(true);
         	this.setExtendedState(Frame.MAXIMIZED_BOTH);
         	Toolkit tk = Toolkit.getDefaultToolkit();
@@ -133,8 +115,6 @@ public class TwiTerraApp
 
     public static void main(String[] args)
     {
-        // Call the static start method like this from the main method of your derived class.
-        // Substitute your application's name for the first argument.
         TwiTerraApp.start("TwiTerra - http://twiterra.com", AppFrame.class);
     }
 }
