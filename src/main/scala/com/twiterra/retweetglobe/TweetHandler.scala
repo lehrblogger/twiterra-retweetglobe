@@ -1,3 +1,18 @@
+/*
+ * TwiTerra
+ *   Revealing how people use Twitter to share and re-share ideas, building connections that encircle the world.
+ *   http://twiterra.com
+ * project by Steven Lehrburger
+ *   lehrburger (at) gmail (dot) com
+ * NYU Interactive Telecommunications Program, Fall 2008
+ * Introduction to Computational Media with Dan Shiffman
+ * 
+ * NASA World Wind code
+ * Copyright (C) 2001, 2006 United States Government
+ * as represented by the Administrator of the
+ * National Aeronautics and Space Administration.
+ * All Rights Reserved.
+ */
 package com.twiterra.retweetglobe
 
 import scala.actors.Actor
@@ -14,10 +29,10 @@ class TweetHandler (
 
   // a few constants that determine visualization behavior 
     // note tha the last three require the expensive recursivelyPopulateChildList
-  val queueSize = 3                     // number of simultaneous database query threads
-  val minNumRetweets = 2                // mininum number of retweets in each tree
-  val minDepth = 1                      // minimum depth of each tree
-  val minAvgDist = 0                    // miniumum average geographic distance for the tree
+  val queueSize = 20                    // number of simultaneous database query threads
+  val minNumRetweets = 4                // mininum number of retweets in each tree
+  val minDepth = 2                      // minimum depth of each tree
+  val minAvgDist = 3000                 // miniumum average geographic distance for the tree
   val minDist = 0                       // minimum geographic distance between any two nodes
 
     
@@ -36,7 +51,7 @@ class TweetHandler (
                                          // third, find the last ID of the last tweet, so we can start looking for new ones 
   println(" with numRootTweets=" + numRootTweets + " and lastParentId=" + lastParentId)
   
-  var index: Int = 29       			 // a counter to keep track of how far it is through the list              
+  var index: Int = -1       			 // a counter to keep track of how far it is through the list              
                                            // is incremented immediately, so starts off one less
   var curNumThreads = 0                  // how many database query theads are currently open
   var gettingNewTweets: Boolean = false  // again, somewhat bad style - a threading lock so that only
@@ -47,7 +62,7 @@ class TweetHandler (
   
   // Adds tweets to the queue until it reaches the maximum by firing off new database query threads
   def addTweetsToQueue = {
-    for (i <- (globeActor.mailboxSize + curNumThreads) to queueSize) {
+    for (i <- curNumThreads to queueSize) {
       addOneTweetToQueue
     }
   }
@@ -55,7 +70,7 @@ class TweetHandler (
   // Adds one tweet to the queue by firing off a new database query thread
   def addOneTweetToQueue = {      
     println("globeActor.mailboxSize = " + globeActor.mailboxSize + "  curNumThreads = " + curNumThreads)
-    if ((globeActor.mailboxSize + curNumThreads) < queueSize) {
+    if (curNumThreads < queueSize) {
       val newDbActor = new dbActor() // somewhat unnecessary, but check to make sure there aren't
       newDbActor.start()                   // too many threads before starting a new one
     }
@@ -73,7 +88,7 @@ class TweetHandler (
     // It needs access to many of the 
   class dbActor() extends Actor {
     def act() { 
-      println("starting one new thread")
+      println("starting one new thread + newTweets.length=" + newTweets.length)
       index += 1                       // increment the index to the next root tweet
                                          // this has to happen right at the beginning, so that
                                          // each thread is using a different index! otherwise
@@ -84,7 +99,6 @@ class TweetHandler (
                                          // from the function in TweetHandler creating the Actor,
                                          // but that doesn't work because we don't *always*
                                          // increment it. so how can this be more elegant?
-        
       curNumThreads += 1               // the thread is starting, so increment the count
    
       // first, check for new tweets
@@ -124,11 +138,17 @@ class TweetHandler (
         oldTweet.recursivelyPopulateChildList
       
         if (treeIsAcceptable(oldTweet)) {
-          println("  sendTweet (old) " + i + "  from " + oldTweet.author)
-          globeActor ! Pair("incoming old tweet", oldTweet)
+          println("  sendTweet (old interesting) " + i + "  from " + oldTweet.author)
+          globeActor ! Pair("incoming old interesting tweet", oldTweet)
                                        // send it to the globe to be displayed
-        } else {                       // if the tweet is to be trashed, only print the output
-          println("  trashed (old) " + i + "  from " + oldTweet.author)
+        } else {                       // but still send it if it is less good, just keep it at the back of the queue
+          if (globeActor.mailboxSize < (queueSize / 5)) {
+                                       // but also don't let the uninteresting ones fill up the entire queue
+            globeActor ! Pair("incoming old uninteresting tweet", oldTweet)
+            println("  sendTweet (old uninteresting) " + i + "  from " + oldTweet.author)
+          } else {
+            println("  enough tweets in queue, trashing " + i + "  from " + oldTweet.author)
+          }
         }
       
       } else { resetIndex }            // otherwise we are at the end, and can restart from the beginning

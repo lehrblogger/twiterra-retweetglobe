@@ -1,3 +1,18 @@
+/*
+ * TwiTerra
+ *   Revealing how people use Twitter to share and re-share ideas, building connections that encircle the world.
+ *   http://twiterra.com
+ * project by Steven Lehrburger
+ *   lehrburger (at) gmail (dot) com
+ * NYU Interactive Telecommunications Program, Fall 2008
+ * Introduction to Computational Media with Dan Shiffman
+ * 
+ * NASA World Wind code
+ * Copyright (C) 2001, 2006 United States Government
+ * as represented by the Administrator of the
+ * National Aeronautics and Space Administration.
+ * All Rights Reserved.
+ */
 package com.twiterra.retweetglobe
 
 import gov.nasa.worldwind.util.StatusBar
@@ -77,7 +92,9 @@ class TwiTerraAppPanel (
                                              // and the globe can display a new one
           case ("incoming new tweet", newTweet: Tweet) => displayTweetTree(newTweet, true)
                                              // so if it has received one, display it
-          case ("incoming old tweet", newTweet: Tweet) => displayTweetTree(newTweet, false)
+          case ("incoming old interesting tweet", newTweet: Tweet) => displayTweetTree(newTweet, false)
+                                             // being sure to give preference to the new tweets
+          case ("incoming old uninteresting tweet", newTweet: Tweet) => displayTweetTree(newTweet, false)
                                              // being sure to give preference to the new tweets
         }
       }
@@ -89,7 +106,7 @@ class TwiTerraAppPanel (
   val tweetHandler = new TweetHandler(globeActor)
   tweetHandler.addTweetsToQueue              // make the tweetHandler and start off the DB query threads
       
-  val maxNumTrees = 8						 // how many trees to display at a time 
+  val maxNumTrees = 7                        // how many trees to display at a time 
                                                // (too many and it gets slow and cluttered)
   val animDuration = 3250                    // this controls the speed of the animations, in ms
   val readDuration = 4750                    // and the length of the pause to read them

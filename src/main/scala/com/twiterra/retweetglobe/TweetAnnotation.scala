@@ -1,3 +1,18 @@
+/*
+ * TwiTerra
+ *   Revealing how people use Twitter to share and re-share ideas, building connections that encircle the world.
+ *   http://twiterra.com
+ * project by Steven Lehrburger
+ *   lehrburger (at) gmail (dot) com
+ * NYU Interactive Telecommunications Program, Fall 2008
+ * Introduction to Computational Media with Dan Shiffman
+ * 
+ * NASA World Wind code
+ * Copyright (C) 2001, 2006 United States Government
+ * as represented by the Administrator of the
+ * National Aeronautics and Space Administration.
+ * All Rights Reserved.
+ */
 package com.twiterra.retweetglobe
 
 import gov.nasa.worldwind.render.GlobeAnnotation
@@ -13,7 +28,7 @@ class TweetAnnotation (
   val isNewTweet: Boolean
 ) //extends GlobeAnnotation(tweetText, position, Font.decode("SansSerif"))				
   //extends GlobeAnnotation(tweetText, position, Font.decode("Arial-BOLD-12"))
-  extends GlobeAnnotation(tweetText, position, new Font("SansSerif", Font.PLAIN, 12)) {
+  extends GlobeAnnotation(tweetText, position, new Font("SansSerif", Font.PLAIN, 14)) {
                                                    // All of those should work, they are just
                                                       // different things I tried to get the non-
                                                       // MacRoman characters to display properly
