@@ -2,6 +2,7 @@
  * TwiTerra
  *   Revealing how people use Twitter to share and re-share ideas, building connections that encircle the world.
  *   http://twiterra.com
+ *   http://github.com/lehrblogger/twiterra-retweetglobe/
  * project by Steven Lehrburger
  *   lehrburger (at) gmail (dot) com
  * NYU Interactive Telecommunications Program, Fall 2008
