@@ -18,7 +18,7 @@ class TweetHandler (
   println("Table schemified")
   
   
-  val queueSize = 30
+  val queueSize = 3
   val minNumRetweets = 3
   var minDepth = 1
   var minAvgDist = 0
@@ -78,7 +78,7 @@ class TweetHandler (
 	      println("  sendTweet (old) " + i + "  from " + oldTweet.author)
           h.globeActor ! Pair("incoming old tweet", oldTweet)
 	    } else {
-	      h.addOneTweetToQueue //replensih queue if one was thrown out
+	      h.addOneTweetToQueue //replenish queue if one was thrown out
 	      println("  trashed (old) " + i + "  from " + oldTweet.author)
 	    }
      

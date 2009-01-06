@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.twiterra</groupId>
   <artifactId>retweetglobe</artifactId>
   <version>1.0-SNAPSHOT</version>
   <inceptionYear>2008</inceptionYear>
   <properties>
+    <main.class>com.twiterra.retweetglobe.TwiTerraApp</main.class>
     <scala.version>2.7.2</scala.version>
   </properties>
 
@@ -74,7 +75,13 @@
     <dependency>
       <groupId>net.java.dev.jogl</groupId>
       <artifactId>jogl-macosx-universal</artifactId>
+      <!-- jogl-windows-i586 OR jogl-macosx-universal OR jogl-linux-i586-->
       <version>1.1.1-rc6</version>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.gluegen</groupId>
+      <artifactId>gluegen-rt</artifactId>
+      <version>1.0b05</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -122,7 +129,7 @@
           <args>
             <arg>-target:jvm-1.5</arg>
           </args>
-          <mainClass>com.twiterra.retweetglobe.TwiTerraApp</mainClass>
+          <mainClass>${main.class}</mainClass>
         </configuration>
       </plugin>
       <plugin>
@@ -144,10 +151,37 @@
             <projectnature>ch.epfl.lamp.sdt.core.scalanature</projectnature>
           </additionalProjectnatures>
           <classpathContainers>
-            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
-            <classpathContainer>ch.epfl.lamp.sdt.launching.SCALA_CONTAINER</classpathContainer>
+            <classpathContainer>
+              org.eclipse.jdt.launching.JRE_CONTAINER
+            </classpathContainer>
+            <classpathContainer>
+              ch.epfl.lamp.sdt.launching.SCALA_CONTAINER
+            </classpathContainer>
           </classpathContainers>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-2</version>
+        <executions>
+          <execution>
+            <id>create-executable-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <archive>
+                <manifest>
+                  <mainClass>${main.class}</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

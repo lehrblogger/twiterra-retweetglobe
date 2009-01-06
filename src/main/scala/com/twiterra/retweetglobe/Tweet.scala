@@ -26,27 +26,26 @@ class Tweet extends KeyedMapper[Long, Tweet] {
 
   def getChildren = Tweet.findAll(By(Tweet.parentId, tweetId), MaxRows(numRetweets))
   def descendants: List[Tweet] = children ++ children.flatMap(_.descendants)
-  var depth: Int = 0//was -1, trying it with zero
+  var depth: Int = 0
 
   def recursivelyPopulateChildList: Unit = {	 //returns depth of tree from this tweet
-    if (numRetweets > 0) children = getChildren
-    
-    var childDepths: List[Int] = Nil
-    children.foreach(child => {
-      child.recursivelyPopulateChildList
-      childDepths = childDepths ++ List(child.depth)
-    })
-    
-    if (children.length == 0) {
-      depth = 0
-    } else {
+    if (numRetweets > 0) {
+      children = getChildren
+      var childDepths: List[Int] = Nil
+      children.foreach(child => {
+        child.recursivelyPopulateChildList
+        childDepths = childDepths ++ List(child.depth)
+      })
       depth = childDepths.sort(_>_).first + 1
+      
+    } else {
+      depth = 0
     }
   }
  
   def indexOfMostInterestingChild:Int = {
     if (children.length <= 0) return -1	//bad style. this simplifies code later
-//TODO do depths of -1 when there are no children cause problems???
+
     val list1 = for ((t, index) <- children.zipWithIndex) yield (index, t.depth, t.avgDist)
     val list2 = list1.sort(_._2 > _._2)
     val list3 = list2.filter(each => each._2 >= list2.first._2) 
@@ -73,6 +72,6 @@ class Tweet extends KeyedMapper[Long, Tweet] {
   
   override def toString = {
     println(author + ": " + original)
-    author + ": " + new String(original.getBytes(), "MacRoman")
+    author + ": " + original //new String(original.getBytes(), "MacRoman")
   }
 }
