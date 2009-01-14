@@ -141,12 +141,9 @@ class TwiTerraAppPanel (
     Thread.sleep(animDuration)
 	    
     // choose a random color for this tweet, within a certain range
-    val randColor = new Random()	
-    val color = new Color((randColor.nextFloat * 65).toInt + 175, 
-                          (randColor.nextFloat * 65).toInt + 175, 
-                          (randColor.nextFloat * 65).toInt + 175)
-	      
-    
+    val random = new Random
+    def randomColor = (random.nextFloat * 65).toInt + 175
+    val color = new Color(randomColor, randomColor, randomColor)
 	  
     // decrease the opaciies of all previously displayed trees that are still visible
     updateTreeLayerOpacities
