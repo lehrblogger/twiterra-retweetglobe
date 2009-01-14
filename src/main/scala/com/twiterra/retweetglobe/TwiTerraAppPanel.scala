@@ -161,7 +161,7 @@ class TwiTerraAppPanel (
 	    
     // put all of this data in a tweet package, and send it to the transition actor
     // which will pause to give time to read the tweet, and then display it's children recursively
-    transitionActor ! new TweetPackage(newTweet, true, isNewTweet, rLayer, aLayer, color)
+    transitionActor ! TweetPackage(newTweet, true, isNewTweet, rLayer, aLayer, color)
   }
     
   // This function displays all of the children of a specific tweet
@@ -172,8 +172,7 @@ class TwiTerraAppPanel (
     // this is the child we are going to follow with the camera
     var maxIndex = t.tweet.indexOfMostInterestingChild
     
-    var index = 0 // TODO change this to be a zip-with-index Scala loop  
-    t.tweet.children.foreach(childTweet => {
+    t.tweet.children.zipWithIndex.foreach({ case (childTweet, index) =>
       // get the position of the child
       val childPos: Position = Position.fromDegrees(childTweet.locLat, childTweet.locLon, 0)
       
@@ -188,7 +187,7 @@ class TwiTerraAppPanel (
         
       // make a new tweening LineEventHandler to handle the animation, and start it
       // (when it finishes, it will trigger the recursion)
-      val target = new LineEventHandler(line, new TweetPackage(childTweet, followNext, t.isNewTweet, t.rLayer, t.aLayer, t.color))
+      val target = new LineEventHandler(line, TweetPackage(childTweet, followNext, t.isNewTweet, t.rLayer, t.aLayer, t.color))
       val anim: Animator = new Animator(animDuration, target)
       anim.start()
         
@@ -196,8 +195,6 @@ class TwiTerraAppPanel (
       if (followNext) {
         wwd.getView.applyStateIterator(ScheduledOrbitViewStateIterator.createCenterIterator(newPos, childPos, animDuration, true))
       }
-      
-      index += 1
     })
       
     // if we ere following this with the camera, and there are no more children on this path
