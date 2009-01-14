@@ -214,7 +214,7 @@ class TwiTerraAppPanel (
     var finalLayers: scala.List[Layer] = initLayers.dropRight(initLayers.length - initLayerCount)
                                              // make a new list of all of the initial layers to keep
     
-    var alpha = (255 / maxNumTrees)          // the alphas decrease more gradually when there are
+    val alpha = (255 / maxNumTrees)          // the alphas decrease more gradually when there are
                                                // more trees being displayed at a time
     initLayers = initLayers.drop(initLayerCount)// then drop the initial layers
                                                // since we already saving them in finalLayers          
