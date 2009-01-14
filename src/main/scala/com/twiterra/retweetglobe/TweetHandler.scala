@@ -45,7 +45,7 @@ class TweetHandler (
   print("Table schemified")
   var numRootTweets = Tweet.count(NullRef(Tweet.parentId), 
                                   By_>(Tweet.numRetweets, minNumRetweets))
-                                         // second, find out how many trees to display before loooping
+                                         // second, find out how many trees to display before looping
   var lastParentId = Tweet.find(NullRef(Tweet.parentId), 
                                 OrderBy(Tweet.tweetId, Descending), 
                                 MaxRows(1)).open_!.tweetId.is
