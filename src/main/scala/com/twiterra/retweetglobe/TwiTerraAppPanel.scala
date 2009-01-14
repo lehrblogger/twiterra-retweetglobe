@@ -65,8 +65,7 @@ class TwiTerraAppPanel (
   context.setGLContext(wwd.getContext)
     
   // this goes through all the layers, keeping only the ones we will need
-  var layers: scala.List[Layer] = wwd.getModel.getLayers.toList
-  layers = layers.filter { l => (
+  val layers: scala.List[Layer] = wwd.getModel.getLayers.toList.filter { l => (
     l.isInstanceOf[gov.nasa.worldwind.layers.StarsLayer] ||
     l.isInstanceOf[gov.nasa.worldwind.layers.SkyGradientLayer] ||
     l.isInstanceOf[gov.nasa.worldwind.layers.FogLayer] ||
@@ -82,9 +81,9 @@ class TwiTerraAppPanel (
     false // for testing purposes, so you can comment them all 
   )}
 
-  var initLayerCount = layers.length         // take note of the initial number of layers
+  val initLayerCount = layers.length         // take note of the initial number of layers
   wwd.getModel.setLayers(new LayerList(layers.toArray)) // and set them in the model
-        
+
   // The globeActor displays tweets on the globe
   val globeActor = actor {
     loop {
