@@ -172,7 +172,7 @@ class TwiTerraAppPanel (
     // this is the child we are going to follow with the camera
     var maxIndex = t.tweet.indexOfMostInterestingChild
     
-    t.tweet.children.zipWithIndex.foreach({ case (childTweet, index) =>
+    for ((childTweet, index) <- t.tweet.children.zipWithIndex) {
       // get the position of the child
       val childPos: Position = Position.fromDegrees(childTweet.locLat, childTweet.locLon, 0)
       
@@ -195,7 +195,7 @@ class TwiTerraAppPanel (
       if (followNext) {
         wwd.getView.applyStateIterator(ScheduledOrbitViewStateIterator.createCenterIterator(newPos, childPos, animDuration, true))
       }
-    })
+    }
       
     // if we ere following this with the camera, and there are no more children on this path
     // then, since we always follow the deepest branch, we know we are done 
