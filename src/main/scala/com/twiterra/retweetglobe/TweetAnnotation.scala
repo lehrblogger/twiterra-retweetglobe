@@ -29,7 +29,7 @@ class TweetAnnotation (
   val isNewTweet: Boolean
 ) //extends GlobeAnnotation(tweetText, position, Font.decode("SansSerif"))				
   //extends GlobeAnnotation(tweetText, position, Font.decode("Arial-BOLD-12"))
-  extends GlobeAnnotation(tweetText, position, new Font("SansSerif", Font.PLAIN, 14)) {
+  extends GlobeAnnotation(tweetText, position, new Font("SansSerif", Font.PLAIN, 16)) {
                                                    // All of those should work, they are just
                                                       // different things I tried to get the non-
                                                       // MacRoman characters to display properly
