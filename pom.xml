@@ -6,7 +6,7 @@
   <inceptionYear>2008</inceptionYear>
   <properties>
     <main.class>com.twiterra.retweetglobe.TwiTerraApp</main.class>
-    <scala.version>2.7.2</scala.version>
+    <scala.version>2.7.3</scala.version>
   </properties>
 
   <repositories>
@@ -70,7 +70,7 @@
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-core</artifactId>
-      <version>0.10-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jogl</groupId>
